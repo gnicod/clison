@@ -4,10 +4,11 @@ import (
 	//	"encoding/json"
 	"os"
 	"bufio"
-	//"fmt"
+	"fmt"
 	"log"
 	"encoding/json"
 	"strings"
+	"strconv"
 )
 
 func main() {
@@ -37,28 +38,75 @@ func main() {
 }
 
 func parse_json(input string,pattern []string, lvl int )  []byte{
-	var j map[string]interface{}
-	err := json.Unmarshal([]byte(input), &j)
+	var gOut  []byte
+	var f interface{}
+	err := json.Unmarshal([]byte(input), &f)
 	if err != nil {
 		panic(err)
-	}
-
-	//If no args was passed by the user
-	if(lvl<0){
-		out,err := json.MarshalIndent(j,"","\t")
-		if err != nil{
-			log.Fatal(err)
+	}else{
+    	switch vf := f.(type) {
+    		case map[string]interface{}:
+				out,err := json.MarshalIndent(vf[pattern[lvl]],"","\t")
+				gOut = out
+				if err != nil{
+					log.Fatal(err)
+				}
+				lvl += 1
+				if lvl < len(pattern){
+					return parse_json(string(out),pattern,lvl)
+				}
+    		case []interface{}:
+				//cast string to i
+				convi, err := strconv.Atoi(pattern[lvl])
+				if err != nil {
+					//TODO print a more usefull message
+					fmt.Println(err)
+					os.Exit(2)
+				}
+				//
+				out,err := json.MarshalIndent(vf[convi],"","\t")
+				gOut = out
+				if err != nil{
+					log.Fatal(err)
+				}
+				lvl += 1
+				if lvl < len(pattern){
+					return parse_json(string(out),pattern,lvl)
+				}
 		}
-		return out
 	}
 
-	out,err := json.MarshalIndent(j[pattern[lvl]],"","\t")
-	if err != nil{
-		log.Fatal(err)
-	}
-	lvl += 1
-	if lvl < len(pattern){
-		return parse_json(string(out),pattern,lvl)
-	}
-	return out
+	return gOut
+}
+
+func WTHisThisJSON(f interface{}) {
+    switch vf := f.(type) {
+    case map[string]interface{}:
+        fmt.Println("is a map:")
+        for k, v := range vf {
+            switch vv := v.(type) {
+            case string:
+                fmt.Printf("%v: is string - %q\n", k, vv)
+            case int:
+                fmt.Printf("%v: is int - %q\n", k, vv)
+            default:
+                fmt.Printf("%v: ", k)
+                WTHisThisJSON(v)
+            }
+
+        }
+    case []interface{}:
+        fmt.Println("is an array:")
+        for k, v := range vf {
+            switch vv := v.(type) {
+            case string:
+                fmt.Printf("%v: is string - %q\n", k, vv)
+            case int:
+                fmt.Printf("%v: is int - %q\n", k, vv)
+            default:
+                fmt.Printf("%v: ", k)
+                WTHisThisJSON(v)
+            }
+        }
+    }
 }
