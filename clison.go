@@ -1,7 +1,6 @@
 package main
 
 import (
-	//	"encoding/json"
 	"os"
 	"bufio"
 	"fmt"
@@ -19,7 +18,6 @@ func main() {
 		hazArg = true
 	}
 	pattern := strings.Split(patterns,".")
-	
 
 	in := bufio.NewReader(os.Stdin);
 	input  := ""
@@ -64,6 +62,7 @@ func parse_json(input string,pattern []string, lvl int )  []byte{
 					os.Exit(2)
 				}
 				//
+				searchInArray(vf,"lol","lol")
 				out,err := json.MarshalIndent(vf[convi],"","\t")
 				gOut = out
 				if err != nil{
@@ -75,38 +74,16 @@ func parse_json(input string,pattern []string, lvl int )  []byte{
 				}
 		}
 	}
-
 	return gOut
 }
 
-func WTHisThisJSON(f interface{}) {
-    switch vf := f.(type) {
-    case map[string]interface{}:
-        fmt.Println("is a map:")
-        for k, v := range vf {
-            switch vv := v.(type) {
-            case string:
-                fmt.Printf("%v: is string - %q\n", k, vv)
-            case int:
-                fmt.Printf("%v: is int - %q\n", k, vv)
-            default:
-                fmt.Printf("%v: ", k)
-                WTHisThisJSON(v)
-            }
-
-        }
-    case []interface{}:
-        fmt.Println("is an array:")
-        for k, v := range vf {
-            switch vv := v.(type) {
-            case string:
-                fmt.Printf("%v: is string - %q\n", k, vv)
-            case int:
-                fmt.Printf("%v: is int - %q\n", k, vv)
-            default:
-                fmt.Printf("%v: ", k)
-                WTHisThisJSON(v)
-            }
-        }
-    }
+func searchInArray(arr []interface{},keyPat string, valuePat string){
+	found := false
+	fmt.Println(keyPat,valuePat)
+	for k, v := range arr {
+		//check if it's a map
+		fmt.Println(k,v)
+		//strip all about pattern
+	}
+	fmt.Println(found)
 }
