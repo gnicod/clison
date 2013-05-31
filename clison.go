@@ -4,7 +4,7 @@ import (
 	//	"encoding/json"
 	"os"
 	"bufio"
-	"fmt"
+	//"fmt"
 	"log"
 	"encoding/json"
 	"strings"
@@ -12,11 +12,13 @@ import (
 
 func main() {
 	patterns := ""
+	hazArg := false
 	if len(os.Args) > 1{
 		patterns = os.Args[1]
+		hazArg = true
 	}
 	pattern := strings.Split(patterns,".")
-	fmt.Println(pattern)
+	
 
 	in := bufio.NewReader(os.Stdin);
 	input  := ""
@@ -24,7 +26,9 @@ func main() {
 		in, err := in.ReadString('\n')
 		input += in
 		if err != nil {
-			lol := parse_json(input,pattern,0)
+			i := 0
+			if !hazArg { i=-1 }
+			lol := parse_json(input,pattern,i)
 			os.Stdout.Write(lol)
 			//fmt.Println(input)
 			os.Exit(0);
@@ -38,7 +42,16 @@ func parse_json(input string,pattern []string, lvl int )  []byte{
 	if err != nil {
 		panic(err)
 	}
-	//out,err := json.MarshalIndent(j["response"],"","\t")
+
+	//If no args was passed by the user
+	if(lvl<0){
+		out,err := json.MarshalIndent(j,"","\t")
+		if err != nil{
+			log.Fatal(err)
+		}
+		return out
+	}
+
 	out,err := json.MarshalIndent(j[pattern[lvl]],"","\t")
 	if err != nil{
 		log.Fatal(err)
