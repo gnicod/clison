@@ -4,8 +4,8 @@
 		"value": "File",
 		"popup": {
 			"menuitem": [
-			{ "value": "New", "onclick": "CreateNewDoc()"  },
-			{ "value": "Open", "onclick": "OpenDoc()"  },
+			{ "value": "New", "onclick": "CreateNewDoc()","name":"Bob"  },
+			{ "value": "Open", "onclick": "OpenDoc()","name":"Alice"  },
 			{ "value": "Close", "onclick": "CloseDoc()"  }
 			]
 		}
