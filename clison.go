@@ -32,14 +32,25 @@ func main() {
 			lol := parse_json(input,pattern,i)
 			//if starts with and ends with "
 			os.Stdout.Write(bytes.TrimSuffix(bytes.TrimPrefix(lol, []byte("\"")), []byte("\""))) 
-			//fmt.Println(input)
 			os.Exit(0)
 		}
 	}
 }
 
 func parse_json(input string,pattern []string, lvl int )  []byte{
-	fmt.Println(pattern[lvl])
+	//if no pattern
+	if lvl==-1{
+		var iface interface{}
+		err := json.Unmarshal([]byte(input), &iface)
+		if err != nil{
+			log.Fatal(err)
+		}
+		indented,err := json.MarshalIndent(iface,"","\t")
+		//we indent then exit
+		os.Stdout.Write(bytes.TrimSuffix(bytes.TrimPrefix(indented, []byte("\"")), []byte("\""))) 
+		os.Exit(0)
+	}
+
 	var gOut  []byte
 	var f interface{}
 	err := json.Unmarshal([]byte(input), &f)
@@ -90,15 +101,10 @@ func parse_json(input string,pattern []string, lvl int )  []byte{
 func searchInArray(arr []interface{},keyPat string, valuePat string){
 	found := false
 	fmt.Println(keyPat,valuePat)
+
 	for k, v := range arr {
-		//check if it's a map
-		fmt.Println(k)
 		fmt.Println(v)
-		//for kk, vv := range arr {
-		//}
-		var v1 = reflect.Type = reflect.TypeOf((*v)(nil)).Elem()
-		fmt.Println(v1)
-		//strip all about pattern
+		fmt.Println(k)
 	}
 	fmt.Println(found)
 }
