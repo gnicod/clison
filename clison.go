@@ -57,8 +57,8 @@ func parse_json(input string,pattern []string, lvl int )  []byte{
 	if err != nil {
 		panic(err)
 	}else{
-    	switch vf := f.(type) {
-    		case map[string]interface{}:
+		switch vf := f.(type) {
+			case map[string]interface{}:
 				out,err := json.MarshalIndent(vf[pattern[lvl]],"","\t")
 				gOut = out
 				if err != nil{
@@ -68,12 +68,30 @@ func parse_json(input string,pattern []string, lvl int )  []byte{
 				if lvl < len(pattern){
 					return parse_json(string(out),pattern,lvl)
 				}
-    		case []interface{}:
+			case []interface{}:
 				//if match pattern [name="Bob"]
 				var searchPatternRegexp = regexp.MustCompile("\\[(.*?)=(.*?)\\]")
 				if searchPatternRegexp.MatchString(pattern[lvl]) {
 					split      := searchPatternRegexp.FindStringSubmatch(pattern[lvl])
-					searchInArray(vf,split[1],split[2])
+
+					for k, v := range vf {
+						r := v.(map[string]interface{})
+						_ = k
+						if r[split[1]]==split[2]{
+							out,err := json.MarshalIndent(r,"","\t")
+							if err != nil{
+								log.Fatal(err)
+							}
+							lvl += 1
+							if lvl < len(pattern){
+								return parse_json(string(out),pattern,lvl)
+							}else{
+								return out
+							}
+						}
+					}
+
+
 				}else{
 					//cast string to i
 					convi, err := strconv.Atoi(pattern[lvl])
@@ -92,19 +110,7 @@ func parse_json(input string,pattern []string, lvl int )  []byte{
 						return parse_json(string(out),pattern,lvl)
 					}
 				}
-
 		}
 	}
 	return gOut
-}
-
-func searchInArray(arr []interface{},keyPat string, valuePat string){
-	found := false
-	fmt.Println(keyPat,valuePat)
-
-	for k, v := range arr {
-		fmt.Println(v)
-		fmt.Println(k)
-	}
-	fmt.Println(found)
 }
